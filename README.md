@@ -230,18 +230,4 @@ python tests/benchmark.py
 - **Caching**: Redis for session management
 - **Microservices**: Containerized application components
 
-## 📞 Support
-
-For technical support or questions about the cryptographic implementation:
-
-- **Documentation**: Check inline code comments
-- **Security Review**: All cryptographic implementations follow NIST standards
-- **Compliance**: HIPAA-inspired security measures
-
-## 📄 License
-
-This project is for educational purposes as part of Cryptographic & Network Security studies.
-
----
-
-**⚠️ Important Security Note**: This is an academic project demonstrating cryptographic concepts. For production medical systems, ensure compliance with healthcare regulations and conduct thorough security audits.
+ 
