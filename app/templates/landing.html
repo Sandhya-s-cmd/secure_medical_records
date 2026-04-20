@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Medical Vault - Advanced Cryptographic Protection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/modern.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0e27;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-color: #667eea;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(102, 126, 234, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up 8s infinite linear;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .floating-shield {
+            position: absolute;
+            font-size: 20rem;
+            color: rgba(102, 126, 234, 0.08);
+            animation: float-slow 12s ease-in-out infinite;
+            top: 5%;
+            left: 5%;
+        }
+
+        .floating-lock {
+            position: absolute;
+            font-size: 12rem;
+            color: rgba(79, 172, 254, 0.08);
+            animation: float-slow 10s ease-in-out infinite reverse;
+            top: 15%;
+            right: 10%;
+        }
+
+        .floating-key {
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(240, 147, 251, 0.08);
+            animation: float-slow 14s ease-in-out infinite;
+            bottom: 10%;
+            left: 15%;
+        }
+
+        @keyframes float-slow {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(10px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-15px) rotate(3deg);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out;
+            text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1.2s ease-out;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            animation: fadeInUp 1.4s ease-out;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-hero:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary-hero {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary-hero:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-outline-hero {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline-hero:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .how-it-works {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .cryptography-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d1b69 100%);
+            color: white;
+        }
+
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .crypto-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .crypto-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .crypto-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #4facfe;
+        }
+
+        .crypto-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .crypto-description {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .crypto-details {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #4facfe;
+        }
+
+        .features-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .security-status {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 1rem 0;
+            z-index: 1000;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .status-icon {
+            color: #4facfe;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .floating-shield,
+            .floating-lock,
+            .floating-key {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Security Icons -->
+    <div class="floating-shield">
+        <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="floating-lock">
+        <i class="fas fa-lock"></i>
+    </div>
+    <div class="floating-key">
+        <i class="fas fa-key"></i>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Secure Medical Vault</h1>
+            <p class="hero-subtitle">Military-Grade Cryptographic Protection for Your Medical Records</p>
+            
+            <div class="hero-buttons">
+                <a href="{{ url_for('auth.login') }}" class="btn-hero btn-primary-hero">
+                    <i class="fas fa-sign-in-alt"></i> Secure Login
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn-hero btn-outline-hero">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Our revolutionary system uses advanced cryptography to ensure your medical records remain private and secure</p>
+            
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3 class="step-title">Secure Registration</h3>
+                    <p class="step-description">Create your account and automatically generate your personal RSA-2048 key pair. Your private key is encrypted with your password and stored securely.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3 class="step-title">Upload Medical Records</h3>
+                    <p class="step-description">Doctors upload medical files which are encrypted using AES-256. The AES key is then encrypted with the patient's RSA public key.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <h3 class="step-title">Digital Signature</h3>
+                    <p class="step-description">Each uploaded file is digitally signed by the doctor using their RSA private key, ensuring authenticity and preventing tampering.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="step-title">Secure Access</h3>
+                    <p class="step-description">Patients decrypt files using their private key. The system verifies the doctor's signature and file integrity before granting access.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <div class="step-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="step-title">Complete Audit Trail</h3>
+                    <p class="step-description">Every action is logged with timestamps, IP addresses, and user agents for complete transparency and compliance.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <div class="step-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="step-title">Ongoing Protection</h3>
+                    <p class="step-description">Your data remains encrypted at rest and in transit, with multiple layers of security protecting against unauthorized access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Cryptography Section -->
+    <section class="cryptography-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Understanding Cryptographic Keys</h2>
+            <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);">Learn about the advanced cryptography that protects your medical data</p>
+            
+            <div class="crypto-grid">
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3 class="crypto-title">RSA-2048 Key Pairs</h3>
+                    <p class="crypto-description">Each user gets a unique RSA key pair for asymmetric encryption. The public key encrypts data, while the private key decrypts it.</p>
+                    <div class="crypto-details">
+                        <strong>Public Key:</strong> Shared freely<br>
+                        <strong>Private Key:</strong> Kept secret<br>
+                        <strong>Key Size:</strong> 2048 bits<br>
+                        <strong>Algorithm:</strong> RSA-PSS for signatures
+                    </div>
+                </div>
+                
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="crypto-title">AES-256 Encryption</h3>
+                    <p class="crypto-description">Medical files are encrypted with AES-256, the gold standard for symmetric encryption used by governments and military.</p>
+                    <div class="crypto-details">
+                        <strong>Key Size:</strong> 256 bits<br>
+                        <strong>Mode:</strong> CBC with random IV<br>
+                        <strong>Security:</strong> 2^256 possible keys<br>
+                        <strong>Standard:</strong> FIPS-197 compliant
+                    </div>
+                </div>
+                
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <h3 class="crypto-title">Digital Signatures</h3>
+                    <p class="crypto-description">Doctors sign files with their private key, creating unforgeable proof of origin and ensuring file integrity.</p>
+                    <div class="crypto-details">
+                        <strong>Algorithm:</strong> RSA-PSS<br>
+                        <strong>Hash:</strong> SHA-256<br>
+                        <strong>Purpose:</strong> Authentication & Integrity<br>
+                        <strong>Verification:</strong> Public key only
+                    </div>
+                </div>
+                
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <h3 class="crypto-title">SHA-256 Hashing</h3>
+                    <p class="crypto-description">Each file gets a unique SHA-256 hash fingerprint, enabling instant detection of any tampering or corruption.</p>
+                    <div class="crypto-details">
+                        <strong>Output:</strong> 256-bit hash<br>
+                        <strong>Collision:</strong> Practically impossible<br>
+                        <strong>Use Case:</strong> Integrity verification<br>
+                        <strong>Standard:</strong> NIST SP 800-107
+                    </div>
+                </div>
+                
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3 class="crypto-title">Hybrid Encryption</h3>
+                    <p class="crypto-description">We combine RSA and AES for optimal performance: RSA encrypts the AES key, AES encrypts the large medical file.</p>
+                    <div class="crypto-details">
+                        <strong>Process:</strong> AES encrypts file<br>
+                        <strong>Key Exchange:</strong> RSA encrypts AES key<br>
+                        <strong>Performance:</strong> Fast for large files<br>
+                        <strong>Security:</strong> Best of both worlds
+                    </div>
+                </div>
+                
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="crypto-title">Key Management</h3>
+                    <p class="crypto-description">Your private keys are encrypted with your password and stored separately from public keys for maximum security.</p>
+                    <div class="crypto-details">
+                        <strong>Storage:</strong> Encrypted at rest<br>
+                        <strong>Access:</strong> Password-protected<br>
+                        <strong>Backup:</strong> User responsibility<br>
+                        <strong>Rotation:</strong> On-demand available
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Advanced Security Features</h2>
+            <p class="section-subtitle">Comprehensive protection for your sensitive medical information</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">End-to-End Encryption</h3>
+                    <p class="feature-description">Your medical records are encrypted on the uploader's device and can only be decrypted by authorized recipients.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3 class="feature-title">Role-Based Access Control</h3>
+                    <p class="feature-description">Strict permission system ensures doctors can only access their assigned patients' records.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="feature-title">Comprehensive Audit Logging</h3>
+                    <p class="feature-description">Every access, upload, or modification is logged with timestamps and user details for compliance.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3 class="feature-title">Digital Certificates</h3>
+                    <p class="feature-description">Cryptographic signatures verify the authenticity and origin of every medical document.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3 class="feature-title">Key Rotation Support</h3>
+                    <p class="feature-description">Users can regenerate their cryptographic keys periodically for enhanced security.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="feature-title">Zero-Knowledge Architecture</h3>
+                    <p class="feature-description">Even administrators cannot access your medical records without your explicit permission.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Security Status Bar -->
+    <div class="security-status">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                    <div class="status-item">
+                        <i class="fas fa-lock status-icon"></i>
+                        <span>AES-256 Encryption Active</span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="status-item">
+                        <i class="fas fa-key status-icon"></i>
+                        <span>RSA-2048 Key Generation</span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="status-item">
+                        <i class="fas fa-shield-alt status-icon"></i>
+                        <span>Digital Signatures Enabled</span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="status-item">
+                        <i class="fas fa-check-circle status-icon"></i>
+                        <span>HIPAA-Compliant Security</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script>
+        // Interactive particle background
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random size
+            const size = Math.random() * 4 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Random position
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.bottom = '-10px';
+            
+            // Random animation duration
+            particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.querySelector('.animated-bg').appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+        
+        // Create particles periodically
+        setInterval(createParticle, 300);
+        
+        // Interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced card hover effects
+            const cards = document.querySelectorAll('.step-card, .crypto-card, .feature-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-15px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Typing effect for hero title
+            const title = document.querySelector('.hero-title');
+            const text = title.textContent;
+            title.textContent = '';
+            title.style.borderRight = '3px solid rgba(102, 126, 234, 0.8)';
+            title.style.animation = 'blink 1s infinite';
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    title.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 80);
+                } else {
+                    title.style.borderRight = 'none';
+                    title.style.animation = 'none';
+                }
+            }
+            
+            setTimeout(typeWriter, 500);
+            
+            // Smooth scroll for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Add parallax effect to floating icons
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelectorAll('.floating-shield, .floating-lock, .floating-key');
+                
+                parallax.forEach((element, index) => {
+                    const speed = 0.5 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+        });
+        
+        // Add CSS animation for cursor blink
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes blink {
+                0%, 50% { border-color: rgba(102, 126, 234, 0.8); }
+                51%, 100% { border-color: transparent; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

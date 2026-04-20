@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/modern.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar p-0">
+                <div class="p-4">
+                    <h4><i class="fas fa-hospital"></i> SecureMed</h4>
+                </div>
+                
+                <div class="user-info">
+                    <div class="mx-auto mb-3">
+                        <i class="fas fa-user-shield fa-4x"></i>
+                    </div>
+                    <h6>{{ current_user.full_name }}</h6>
+                    <small>Administrator</small>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.users_list') }}">
+                        <i class="fas fa-users"></i> User Management
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.records_list') }}">
+                        <i class="fas fa-file-medical"></i> Medical Records
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.access_logs') }}">
+                        <i class="fas fa-history"></i> Access Logs
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.system_status') }}">
+                        <i class="fas fa-cogs"></i> System Status
+                    </a>
+                    
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+                
+                <div class="text-center mx-3 mb-3">
+                    <div class="bg-success text-white rounded p-2">
+                        <small><i class="fas fa-shield-alt"></i> AES-256 Encrypted</small>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Main Content -->
+            <div class="col-md-9 main-content-modern">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Create New User</h2>
+                    <div class="text-muted">
+                        <i class="fas fa-user-plus"></i> Add new system user
+                    </div>
+                </div>
+                
+                <!-- Create User Form -->
+                <div class="glass-card">
+                    <div class="card-body p-4">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="full_name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="role" class="form-label">Role</label>
+                                    <select class="form-control" id="role" name="role" required>
+                                        <option value="">Select Role</option>
+                                        <option value="doctor">Doctor</option>
+                                        <option value="patient">Patient</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required minlength="8">
+                                    <small class="text-muted">Minimum 8 characters</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                    <label class="form-check-label" for="is_active">Active User</label>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mb-4">
+                                <h6><i class="fas fa-info-circle"></i> Security Information</h6>
+                                <p class="mb-2"><strong>RSA Key Generation:</strong> New users will automatically receive RSA-2048 key pairs for secure communication.</p>
+                                <p class="mb-2"><strong>Password Security:</strong> Passwords are hashed using bcrypt for secure storage.</p>
+                                <p><strong>Access Control:</strong> Role-based permissions ensure users can only access authorized functions.</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn-modern btn-primary-modern">
+                                    <i class="fas fa-user-plus me-2"></i> Create User
+                                </button>
+                                <a href="{{ url_for('admin.users_list') }}" class="btn-modern btn-outline-primary-modern ms-2">
+                                    <i class="fas fa-times me-2"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password confirmation validation
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (password !== confirmPassword) {
+                this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        document.getElementById('password').addEventListener('input', function() {
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (confirmPassword && this.value !== confirmPassword) {
+                this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html>

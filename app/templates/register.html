@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Medical Records - Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0e27;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-color: #667eea;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
+            min-height: 100vh;
+            padding: 40px 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(102, 126, 234, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up 8s infinite linear;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .floating-shield {
+            position: absolute;
+            font-size: 15rem;
+            color: rgba(102, 126, 234, 0.05);
+            animation: float-slow 12s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+        }
+
+        .floating-lock {
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(79, 172, 254, 0.05);
+            animation: float-slow 10s ease-in-out infinite reverse;
+            top: 20%;
+            right: 15%;
+        }
+
+        .floating-key {
+            position: absolute;
+            font-size: 8rem;
+            color: rgba(240, 147, 251, 0.05);
+            animation: float-slow 14s ease-in-out infinite;
+            bottom: 15%;
+            left: 20%;
+        }
+
+        @keyframes float-slow {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(10px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-15px) rotate(3deg);
+            }
+        }
+
+        .register-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .register-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .logo h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+        }
+
+        .form-select {
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .role-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .role-info:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .role-info h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .role-info ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .role-info li {
+            margin-bottom: 8px;
+        }
+
+        .role-info strong {
+            color: var(--accent-color);
+        }
+
+        .form-check {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-check:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .form-check-input {
+            border-radius: 6px;
+            border: 2px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .form-check-input:checked {
+            background: var(--primary-gradient);
+            border-color: var(--accent-color);
+        }
+
+        .form-check-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-danger {
+            background: rgba(245, 101, 101, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .alert-success {
+            background: rgba(74, 222, 128, 0.1);
+            color: #059669;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .alert-info {
+            background: rgba(79, 172, 254, 0.1);
+            color: #0369a1;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
+        .text-center a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .text-center a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .security-feature {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .security-feature:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .security-feature i {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .security-feature small {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                margin: 20px;
+                padding: 30px;
+            }
+            
+            .floating-shield,
+            .floating-lock,
+            .floating-key {
+                display: none;
+            }
+            
+            .security-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Security Icons -->
+    <div class="floating-shield">
+        <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="floating-lock">
+        <i class="fas fa-lock"></i>
+    </div>
+    <div class="floating-key">
+        <i class="fas fa-key"></i>
+    </div>
+    
+    <div class="container">
+        <div class="register-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h1>Secure Medical Vault</h1>
+                <p>Create Your Secure Account</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user me-2"></i>Username
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" required 
+                               placeholder="Choose a username">
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" required 
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="full_name" class="form-label">
+                        <i class="fas fa-id-card me-2"></i>Full Name
+                    </label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" required 
+                           placeholder="Enter your full name">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="role" class="form-label">
+                        <i class="fas fa-user-tag me-2"></i>Account Role
+                    </label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="doctor">👨‍⚕️ Doctor</option>
+                        <option value="patient">👤 Patient</option>
+                    </select>
+                </div>
+                
+                <div class="role-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Role Permissions:</h6>
+                    <ul>
+                        <li><strong>👨‍⚕️ Doctor:</strong> Can upload and manage medical records for assigned patients</li>
+                        <li><strong>👤 Patient:</strong> Can view and download their own medical records only</li>
+                        <li><strong>🔐 Both roles:</strong> Receive automatic RSA-2048 encryption keys</li>
+                    </ul>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="8" 
+                               placeholder="Create a strong password">
+                        <small class="text-muted"><i class="fas fa-shield-alt me-1"></i>Minimum 8 characters</small>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="confirm_password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Confirm Password
+                        </label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required 
+                               placeholder="Confirm your password">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            <i class="fas fa-check-circle me-2"></i>
+                            I agree to the terms and conditions and understand that my medical data will be encrypted using military-grade AES-256 and RSA-2048 encryption standards.
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-user-plus me-2"></i>Create Secure Account
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            </div>
+            
+            <div class="security-features">
+                <div class="security-feature">
+                    <i class="fas fa-key"></i>
+                    <small>Automatic RSA-2048 Keys</small>
+                </div>
+                <div class="security-feature">
+                    <i class="fas fa-lock"></i>
+                    <small>AES-256 File Encryption</small>
+                </div>
+                <div class="security-feature">
+                    <i class="fas fa-signature"></i>
+                    <small>Digital Signatures</small>
+                </div>
+                <div class="security-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <small>HIPAA Compliant</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Interactive particle background
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random size
+            const size = Math.random() * 4 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Random position
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.bottom = '-10px';
+            
+            // Random animation duration
+            particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.querySelector('.animated-bg').appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+        
+        // Create particles periodically
+        setInterval(createParticle, 300);
+        
+        // Interactive form effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus effects to form inputs
+            const inputs = document.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+                
+                // Add typing effect
+                input.addEventListener('input', function() {
+                    if (this.value.length > 0) {
+                        this.style.borderColor = '#4facfe';
+                    } else {
+                        this.style.borderColor = '#e2e8f0';
+                    }
+                });
+            });
+            
+            // Password confirmation validation
+            const confirmPassword = document.getElementById('confirm_password');
+            const password = document.getElementById('password');
+            
+            confirmPassword.addEventListener('input', function() {
+                if (password.value !== this.value) {
+                    this.style.borderColor = '#f56565';
+                    this.setCustomValidity('Passwords do not match');
+                } else {
+                    this.style.borderColor = '#4facfe';
+                    this.setCustomValidity('');
+                }
+            });
+            
+            password.addEventListener('input', function() {
+                if (confirmPassword.value.length > 0 && this.value !== confirmPassword.value) {
+                    confirmPassword.style.borderColor = '#f56565';
+                } else if (confirmPassword.value.length > 0) {
+                    confirmPassword.style.borderColor = '#4facfe';
+                }
+            });
+            
+            // Add parallax effect to floating icons
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelectorAll('.floating-shield, .floating-lock, .floating-key');
+                
+                parallax.forEach((element, index) => {
+                    const speed = 0.5 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

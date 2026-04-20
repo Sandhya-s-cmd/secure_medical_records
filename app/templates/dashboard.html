@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Medical Records - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .security-badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .user-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar p-0">
+                <div class="p-4">
+                    <h4><i class="fas fa-hospital"></i> SecureMed</h4>
+                </div>
+                
+                <div class="user-info">
+                    <div class="mx-auto mb-3">
+                        <i class="fas fa-user-circle fa-4x"></i>
+                    </div>
+                    <h6>{{ current_user.full_name }}</h6>
+                    <small>{{ current_user.role.title() }}</small>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    {% if current_user.is_doctor() %}
+                    <a class="nav-link" href="{{ url_for('records.doctor_dashboard') }}">
+                        <i class="fas fa-file-medical"></i> My Records
+                    </a>
+                    {% elif current_user.is_patient() %}
+                    <a class="nav-link" href="{{ url_for('records.patient_dashboard') }}">
+                        <i class="fas fa-folder-open"></i> My Records
+                    </a>
+                    {% endif %}
+                    {% if current_user.is_admin() %}
+                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-cogs"></i> Admin Panel
+                    </a>
+                    {% endif %}
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+                
+                <div class="security-badge mx-3 mb-3">
+                    <small><i class="fas fa-shield-alt"></i> AES-256 Encrypted</small><br>
+                    <small><i class="fas fa-lock"></i> RSA-2048 Protected</small>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Dashboard</h2>
+                    <div class="text-muted">
+                        <i class="fas fa-clock"></i> Last login: {{ moment(current_user.last_seen).fromNow() if current_user.last_seen else 'Never' }}
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    {% if current_user.is_admin() %}
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-users text-primary"></i>
+                            <h3>{{ total_users or 0 }}</h3>
+                            <p class="text-muted">Total Users</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-user-md text-success"></i>
+                            <h3>{{ total_doctors or 0 }}</h3>
+                            <p class="text-muted">Doctors</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-user-injured text-info"></i>
+                            <h3>{{ total_patients or 0 }}</h3>
+                            <p class="text-muted">Patients</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-file-medical text-warning"></i>
+                            <h3>{{ total_records or 0 }}</h3>
+                            <p class="text-muted">Medical Records</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Welcome Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if current_user.is_admin() %}
+                                <i class="fas fa-shield-alt"></i> Admin Dashboard
+                            {% elif current_user.is_doctor() %}
+                                <i class="fas fa-user-md"></i> Doctor Dashboard
+                            {% else %}
+                                <i class="fas fa-user-injured"></i> Patient Dashboard
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">
+                            Welcome to the Secure Medical Records System. Your data is protected with military-grade encryption.
+                        </p>
+                        
+                        {% if current_user.is_doctor() %}
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6>Quick Actions:</h6>
+                                <a href="{{ url_for('records.doctor_dashboard') }}" class="btn btn-primary me-2">
+                                    <i class="fas fa-upload"></i> Upload Record
+                                </a>
+                                <a href="{{ url_for('records.doctor_dashboard') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-list"></i> View Records
+                                </a>
+                            </div>
+                        </div>
+                        {% elif current_user.is_patient() %}
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6>Quick Actions:</h6>
+                                <a href="{{ url_for('records.patient_dashboard') }}" class="btn btn-primary">
+                                    <i class="fas fa-folder-open"></i> View My Records
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Patient Details Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-user-injured"></i> Patient Details</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Username:</strong> {{ current_user.username }}</p>
+                                <p><strong>Email:</strong> {{ current_user.email }}</p>
+                                <p><strong>Full Name:</strong> {{ current_user.full_name }}</p>
+                                <p><strong>Phone:</strong> {{ current_user.phone or 'Not provided' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Role:</strong> <span class="badge bg-primary">{{ current_user.role.title() }}</span></p>
+                                <p><strong>Account Status:</strong> <span class="badge bg-success">Active</span></p>
+                                <p><strong>Member Since:</strong> {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+                                <p><strong>Medical Records:</strong> {{ records|length }} records</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    <i class="fas fa-key"></i> Change Password
+                                </button>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#regenerateKeysModal">
+                                    <i class="fas fa-sync"></i> Regenerate Keys
+                                </button>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-success w-100" onclick="downloadPublicKey()">
+                                    <i class="fas fa-download"></i> Download Public Key
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Information -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-lock"></i> Security Features</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> AES-256 file encryption</li>
+                                    <li><i class="fas fa-check text-success"></i> RSA-2048 key exchange</li>
+                                    <li><i class="fas fa-check text-success"></i> Digital signatures</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> SHA-256 integrity checks</li>
+                                    <li><i class="fas fa-check text-success"></i> Role-based access control</li>
+                                    <li><i class="fas fa-check text-success"></i> Comprehensive audit logging</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required minlength="8">
+                            <small class="text-muted">Minimum 8 characters</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Regenerate Keys Modal -->
+    <div class="modal fade" id="regenerateKeysModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Regenerate RSA Keys</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="regenerateKeysForm">
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Important Warning</h6>
+                            <p><strong>This action cannot be undone!</strong></p>
+                            <ul>
+                                <li>All existing encrypted files will become inaccessible</li>
+                                <li>Your current RSA key pair will be permanently deleted</li>
+                                <li>A new RSA-2048 key pair will be generated</li>
+                                <li>You will need to re-encrypt all your files</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="key_password" class="form-label">Confirm Your Password</label>
+                            <input type="password" class="form-control" id="key_password" name="key_password" required 
+                                   placeholder="Enter your password to confirm key regeneration">
+                            <small class="text-muted">Your password is required to regenerate your encryption keys.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="regenerateKeys()">Regenerate Keys</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/auth/logout';
+            }
+        }
+        
+        function changePassword() {
+            const form = document.getElementById('changePasswordForm');
+            const formData = new FormData(form);
+            
+            fetch('/auth/change-password', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password changed successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                    form.reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+        
+        function regenerateKeys() {
+            const form = document.getElementById('regenerateKeysForm');
+            const formData = new FormData(form);
+            
+            if (confirm('Are you sure you want to regenerate your RSA keys? This action cannot be undone and will invalidate all existing encrypted files.')) {
+                fetch('/auth/regenerate-keys', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('RSA keys regenerated successfully!');
+                        bootstrap.Modal.getInstance(document.getElementById('regenerateKeysModal')).hide();
+                        form.reset();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+        
+        function downloadPublicKey() {
+            window.open('/auth/download-public-key', '_blank');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Secure Medical Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar p-0">
+                <div class="p-4">
+                    <h4><i class="fas fa-hospital"></i> SecureMed</h4>
+                </div>
+                
+                <div class="user-info">
+                    <div class="mx-auto mb-3">
+                        <i class="fas fa-user-circle fa-4x"></i>
+                    </div>
+                    <h6>{{ current_user.full_name }}</h6>
+                    <small>Doctor</small>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{{ url_for('records.doctor_dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-upload"></i> Upload Record
+                    </a>
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+                
+                <div class="text-center mx-3 mb-3">
+                    <div class="bg-success text-white rounded p-2">
+                        <small><i class="fas fa-shield-alt"></i> AES-256 Encrypted</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Doctor Dashboard</h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-upload"></i> Upload Medical Record
+                    </button>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-users text-primary"></i>
+                            <h3>{{ patients|length }}</h3>
+                            <p class="text-muted">Total Patients</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-file-medical text-success"></i>
+                            <h3>{{ records|length }}</h3>
+                            <p class="text-muted">Records Uploaded</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card">
+                            <i class="fas fa-lock text-warning"></i>
+                            <h3>256-bit</h3>
+                            <p class="text-muted">Encryption Level</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Records -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-history"></i> Recent Medical Records</h5>
+                        {% if records %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>File Name</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in records %}
+                                    <tr>
+                                        <td>{{ record.patient.full_name if record.patient else 'Unknown' }}</td>
+                                        <td>{{ record.original_filename }}</td>
+                                        <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-lock"></i> Encrypted
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewRecordDetails({{ record.id }})">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-medical fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No medical records uploaded yet</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <i class="fas fa-upload"></i> Upload First Record
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Patients List -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-users"></i> Available Patients</h5>
+                        {% if patients %}
+                        <div class="row">
+                            {% for patient in patients %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-user-circle fa-2x text-primary"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">{{ patient.full_name }}</h6>
+                                                <small class="text-muted">{{ patient.email }}</small>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="selectPatient({{ patient.id }}, '{{ patient.full_name }}')">
+                                                <i class="fas fa-plus"></i> Select
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No patients registered yet</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-user"></i> Account Profile</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Username:</strong> {{ current_user.username }}</p>
+                    <p><strong>Email:</strong> {{ current_user.email }}</p>
+                    <p><strong>Full Name:</strong> {{ current_user.full_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Role:</strong> <span class="badge bg-primary">{{ current_user.role.title() }}</span></p>
+                    <p><strong>Account Status:</strong> <span class="badge bg-success">Active</span></p>
+                    <p><strong>Member Since:</strong> {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#regenerateKeysModal">
+                        <i class="fas fa-sync"></i> Regenerate Keys
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-success w-100" onclick="downloadPublicKey()">
+                        <i class="fas fa-download"></i> Download Public Key
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Medical Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="patient_id" class="form-label">Select Patient</label>
+                            <select class="form-control" id="patient_id" name="patient_id" required>
+                                <option value="">Choose a patient...</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}">{{ patient.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="medical_file" class="form-label">Medical File</label>
+                            <input type="file" class="form-control" id="medical_file" name="medical_file" 
+                                   accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.dicom" required>
+                            <small class="text-muted">Supported formats: PDF, DOC, DOCX, TXT, JPG, PNG, DICOM (Max: 16MB)</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="doctor_password" class="form-label">Your Password</label>
+                            <input type="password" class="form-control" id="doctor_password" name="doctor_password" required>
+                            <small class="text-muted">Enter your password to sign the document with your private key</small>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-shield-alt"></i> <strong>Security:</strong> Your file will be encrypted using AES-256 and protected with RSA-2048 encryption.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadRecord()">
+                        <i class="fas fa-upload"></i> Upload Secure Record
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required minlength="8">
+                            <small class="text-muted">Minimum 8 characters</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Regenerate Keys Modal -->
+    <div class="modal fade" id="regenerateKeysModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Regenerate RSA Keys</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="regenerateKeysForm">
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Important Warning</h6>
+                            <p><strong>This action cannot be undone!</strong></p>
+                            <ul>
+                                <li>All existing encrypted files will become inaccessible</li>
+                                <li>Your current RSA key pair will be permanently deleted</li>
+                                <li>A new RSA-2048 key pair will be generated</li>
+                                <li>You will need to re-encrypt all your files</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="key_password" class="form-label">Confirm Your Password</label>
+                            <input type="password" class="form-control" id="key_password" name="key_password" required 
+                                   placeholder="Enter your password to confirm key regeneration">
+                            <small class="text-muted">Your password is required to regenerate your encryption keys.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="regenerateKeys()">Regenerate Keys</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Record Details Modal -->
+    <div class="modal fade" id="recordDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-medical me-2"></i> Medical Record Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="recordDetailsContent">
+                        <!-- Record details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script>
+        function selectPatient(patientId, patientName) {
+            document.getElementById('patient_id').value = patientId;
+            var modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+            modal.show();
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/auth/logout';
+            }
+        }
+        
+        function changePassword() {
+            const form = document.getElementById('changePasswordForm');
+            const formData = new FormData(form);
+            
+            fetch('/auth/change-password', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password changed successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                    form.reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+        
+        function regenerateKeys() {
+            const form = document.getElementById('regenerateKeysForm');
+            const formData = new FormData(form);
+            
+            if (confirm('Are you sure you want to regenerate your RSA keys? This action cannot be undone and will invalidate all existing encrypted files.')) {
+                fetch('/auth/regenerate-keys', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('RSA keys regenerated successfully!');
+                        bootstrap.Modal.getInstance(document.getElementById('regenerateKeysModal')).hide();
+                        form.reset();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+        
+        function downloadPublicKey() {
+            window.open('/auth/download-public-key', '_blank');
+        }
+        
+        function viewRecordDetails(recordId) {
+            // Fetch record details via API
+            fetch('/records/details/' + recordId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const record = data.record;
+                        const content = '<div class="row">' +
+                            '<div class="col-md-6">' +
+                                '<h6><i class="fas fa-user me-2"></i> Patient Information</h6>' +
+                                '<p><strong>Name:</strong> ' + record.patient_full_name + '</p>' +
+                                '<p><strong>Email:</strong> ' + record.patient_email + '</p>' +
+                            '</div>' +
+                            '<div class="col-md-6">' +
+                                '<h6><i class="fas fa-file me-2"></i> File Information</h6>' +
+                                '<p><strong>Filename:</strong> ' + record.original_filename + '</p>' +
+                                '<p><strong>Size:</strong> ' + record.file_size_formatted + '</p>' +
+                                '<p><strong>Uploaded:</strong> ' + record.created_at + '</p>' +
+                            '</div>' +
+                            '<div class="row mt-3">' +
+                                '<div class="col-md-12">' +
+                                    '<h6><i class="fas fa-shield-alt me-2"></i> Security Information</h6>' +
+                                    '<div class="d-flex gap-2">' +
+                                        '<span class="badge bg-primary">' +
+                                            '<i class="fas fa-lock me-1"></i> AES-256 Encrypted' +
+                                        '</span>' +
+                                        '<span class="badge bg-success">' +
+                                            '<i class="fas fa-signature me-1"></i> Digitally Signed' +
+                                        '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                        document.getElementById('recordDetailsContent').innerHTML = content;
+                        const modal = new bootstrap.Modal(document.getElementById('recordDetailsModal'));
+                        modal.show();
+                    } else {
+                        alert('Error loading record details');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading record details');
+                });
+        }
+        
+        async function uploadRecord() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/records/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Medical record uploaded successfully!');
+                    // Clear form
+                    form.reset();
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                    // Reload page to show new record
+                    location.reload();
+                } else {
+                    alert('Upload failed: ' + result.message);
+                }
+            } catch (error) {
+                alert('Upload error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

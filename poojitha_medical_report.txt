@@ -1,0 +1,118 @@
+MEDICAL REPORT
+=============
+
+PATIENT INFORMATION
+------------------
+Name: Poojitha Reddy
+Age: 28 years
+Gender: Female
+Date of Visit: January 20, 2024
+Patient ID: PT-2024-002
+
+CONSULTATION DETAILS
+--------------------
+Consulting Doctor: Dr. S. Patel
+Department: Internal Medicine
+Chief Complaints: 
+- Abdominal pain for 1 week
+- Nausea and occasional vomiting
+- Loss of appetite
+- Weight loss of 3 kg in 1 month
+
+CLINICAL EXAMINATION
+-------------------
+Vital Signs:
+- Blood Pressure: 110/70 mmHg
+- Heart Rate: 72 bpm
+- Temperature: 99.1°F
+- Respiratory Rate: 18 breaths/min
+- Weight: 58 kg
+- Height: 165 cm
+- BMI: 21.3 kg/m²
+
+Physical Examination:
+- General appearance: Moderately built
+- Abdomen: Mild tenderness in epigastric region
+- Cardiovascular: Normal heart sounds
+- Respiratory: Clear bilaterally
+- CNS: No neurological deficits
+
+LABORATORY INVESTIGATIONS
+--------------------------
+Complete Blood Count:
+- Hemoglobin: 11.8 g/dL
+- WBC Count: 7,200 cells/mm³
+- Platelet Count: 2,65,000 cells/mm³
+- ESR: 25 mm/hr
+
+Liver Function Tests:
+- SGOT (AST): 45 U/L
+- SGPT (ALT): 52 U/L
+- Alkaline Phosphatase: 120 U/L
+- Total Bilirubin: 1.1 mg/dL
+- Direct Bilirubin: 0.3 mg/dL
+
+Renal Function Tests:
+- Blood Urea: 28 mg/dL
+- Serum Creatinine: 0.9 mg/dL
+
+Abdominal Ultrasound:
+- Liver: Normal size and echotexture
+- Gallbladder: No stones, normal wall thickness
+- Kidneys: Normal size and position
+- Pancreas: Normal appearance
+
+ENDOSCOPY FINDINGS
+------------------
+Upper GI Endoscopy:
+- Esophagus: Normal
+- Stomach: Mild erythema in antrum
+- Duodenum: Normal mucosa
+
+DIAGNOSIS
+---------
+1. Functional Dyspepsia
+2. Mild Gastritis
+3. Anxiety-related gastrointestinal symptoms
+
+TREATMENT PLAN
+--------------
+Medications:
+1. Pantoprazole 40mg - Once daily before breakfast
+2. Domperidone 10mg - Three times daily before meals
+3. Multivitamin supplement - Once daily
+4. Anxiolytic (if needed) - On physician's discretion
+
+Dietary Recommendations:
+- Small, frequent meals (6 meals/day)
+- Avoid spicy, oily, and fried foods
+- Increase fiber intake
+- Adequate hydration (2-3 liters water/day)
+- Avoid caffeine and carbonated beverages
+
+Lifestyle Modifications:
+- Regular meal timing
+- Stress management through yoga/meditation
+- Adequate sleep (7-8 hours)
+- Light exercise like walking
+
+FOLLOW-UP
+---------
+Next Review: February 10, 2024
+Instructions:
+- Continue medications as prescribed
+- Report any worsening symptoms immediately
+- Repeat LFT after 4 weeks if symptoms persist
+- Maintain food diary for 2 weeks
+
+DOCTOR'S SIGNATURE
+------------------
+Dr. Sandy
+MD (Internal Medicine)
+Registration No: A-67890
+
+---
+This report is generated electronically and is valid without signature.
+For any queries, contact: +91-9876543211
+
+Note: This medical report contains confidential patient information and should be handled according to medical privacy regulations.

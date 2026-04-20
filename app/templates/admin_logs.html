@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Logs - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/modern.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar p-0">
+                <div class="p-4">
+                    <h4><i class="fas fa-hospital"></i> SecureMed</h4>
+                </div>
+                
+                <div class="user-info">
+                    <div class="mx-auto mb-3">
+                        <i class="fas fa-user-shield fa-4x"></i>
+                    </div>
+                    <h6>{{ current_user.full_name }}</h6>
+                    <small>Administrator</small>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.users_list') }}">
+                        <i class="fas fa-users"></i> User Management
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.records_list') }}">
+                        <i class="fas fa-file-medical"></i> Medical Records
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.access_logs') }}">
+                        <i class="fas fa-history"></i> Access Logs
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.system_status') }}">
+                        <i class="fas fa-cogs"></i> System Status
+                    </a>
+                    
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+                
+                <div class="text-center mx-3 mb-3">
+                    <div class="bg-success text-white rounded p-2">
+                        <small><i class="fas fa-shield-alt"></i> AES-256 Encrypted</small>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Main Content -->
+            <div class="col-md-9 main-content-modern">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>System Access Logs</h2>
+                    <div class="text-muted">
+                        <i class="fas fa-history"></i> Total: {{ logs.total }} entries
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="glass-card mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">
+                            <i class="fas fa-filter me-2"></i> Filter Logs
+                        </h5>
+                        <form method="GET" class="row g-3">
+                            <div class="col-md-3">
+                                <label for="action_filter" class="form-label">Action</label>
+                                <select class="form-control" id="action_filter" name="action">
+                                    <option value="">All Actions</option>
+                                    <option value="login" {% if request.args.get('action') == 'login' %}selected{% endif %}>Login</option>
+                                    <option value="logout" {% if request.args.get('action') == 'logout' %}selected{% endif %}>Logout</option>
+                                    <option value="upload" {% if request.args.get('action') == 'upload' %}selected{% endif %}>Upload</option>
+                                    <option value="view" {% if request.args.get('action') == 'view' %}selected{% endif %}>View</option>
+                                    <option value="download" {% if request.args.get('action') == 'download' %}selected{% endif %}>Download</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="success_filter" class="form-label">Status</label>
+                                <select class="form-control" id="success_filter" name="success">
+                                    <option value="">All Status</option>
+                                    <option value="true" {% if request.args.get('success') == 'true' %}selected{% endif %}>Success</option>
+                                    <option value="false" {% if request.args.get('success') == 'false' %}selected{% endif %}>Failed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date_filter" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date_filter" name="date" 
+                                       value="{{ request.args.get('date', '') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="user_filter" class="form-label">User</label>
+                                <input type="text" class="form-control" id="user_filter" name="user" 
+                                       placeholder="Search by username..." 
+                                       value="{{ request.args.get('user', '') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ip_filter" class="form-label">IP Address</label>
+                                <input type="text" class="form-control" id="ip_filter" name="ip" 
+                                       placeholder="Search by IP..." 
+                                       value="{{ request.args.get('ip', '') }}">
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn-modern btn-primary-modern">
+                                    <i class="fas fa-search me-2"></i> Apply Filters
+                                </button>
+                                <a href="{{ url_for('admin.access_logs') }}" class="btn-modern btn-outline-primary-modern ms-2">
+                                    <i class="fas fa-times me-2"></i> Clear Filters
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Logs Table -->
+                <div class="glass-card">
+                    <div class="card-body p-4">
+                        {% if logs.items %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Record</th>
+                                        <th>IP Address</th>
+                                        <th>User Agent</th>
+                                        <th>Status</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in logs.items %}
+                                    <tr class="{% if not log.success %}table-danger{% else %}table-success{% endif %}">
+                                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle me-2"></i>
+                                                {{ log.user.full_name if log.user else 'System' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'primary' if log.action in ['login', 'logout'] else 'info' if log.action in ['view'] else 'warning' if log.action in ['upload'] else 'secondary' }}">
+                                                {{ log.action.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if log.record %}
+                                                <a href="#" onclick="viewRecord({{ log.record.id }})" class="text-decoration-none">
+                                                    <i class="fas fa-file-medical me-1"></i>
+                                                    #{{ log.record.id }}
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <code>{{ log.ip_address }}</code>
+                                        </td>
+                                        <td class="text-truncate" style="max-width: 200px;" title="{{ log.user_agent }}">
+                                            {{ log.user_agent[:50] }}{% if log.user_agent|length > 50 %}...{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if log.success %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i> Success
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times me-1"></i> Failed
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if log.failure_reason %}
+                                                <span class="text-danger" title="{{ log.failure_reason }}">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    {{ log.failure_reason[:30] }}{% if log.failure_reason|length > 30 %}...{% endif %}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        {% if logs.pages > 1 %}
+                        <nav aria-label="Logs pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if logs.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.access_logs', page=logs.prev_num) }}">
+                                        <i class="fas fa-chevron-left"></i> Previous
+                                    </a>
+                                </li>
+                                {% endif %}
+                                
+                                {% for page_num in logs.iter_pages() %}
+                                <li class="page-item {% if page_num == logs.page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('admin.access_logs', page=page_num) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                
+                                {% if logs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.access_logs', page=logs.next_num) }}">
+                                        Next <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                        
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Access Logs Found</h5>
+                            <p class="text-muted">No access logs have been recorded yet.</p>
+                            <div class="mt-3">
+                                <div class="bg-light rounded p-3">
+                                    <h6><i class="fas fa-info-circle"></i> System Information</h6>
+                                    <p class="mb-2">Access logs will appear here once users start interacting with the system.</p>
+                                    <ul class="list-unstyled text-start">
+                                        <li><i class="fas fa-check text-success me-2"></i> Login attempts are logged</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> File access is tracked</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Failed attempts are recorded</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> IP addresses are stored</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-modern">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="stat-number">{{ logs.total }}</h3>
+                            <p class="stat-label">Total Logs</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-modern">
+                                <i class="fas fa-check-circle text-success"></i>
+                            </div>
+                            <h3 class="stat-number">{{ success_count }}</h3>
+                            <p class="stat-label">Successful</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-modern">
+                                <i class="fas fa-times-circle text-danger"></i>
+                            </div>
+                            <h3 class="stat-number">{{ failed_count }}</h3>
+                            <p class="stat-label">Failed</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-modern">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="stat-number">{{ unique_ips }}</h3>
+                            <p class="stat-label">Unique IPs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function viewRecord(recordId) {
+            // Open record details in new window
+            window.open(`/records/view/${recordId}`, '_blank');
+        }
+        
+        // Add hover effects to table rows
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

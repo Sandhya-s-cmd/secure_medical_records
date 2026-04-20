@@ -1,0 +1,81 @@
+MEDICAL REPORT
+=============
+
+PATIENT INFORMATION
+------------------
+Name: Sandhya Kumar
+Age: 32 years
+Gender: Female
+Date of Visit: January 15, 2024
+Patient ID: PT-2024-001
+
+CONSULTATION DETAILS
+--------------------
+Consulting Doctor: Dr. Poojitha
+Department: General Medicine
+Chief Complaints: 
+- Persistent headache for 2 weeks
+- Occasional dizziness
+- Fatigue and weakness
+
+CLINICAL EXAMINATION
+-------------------
+Vital Signs:
+- Blood Pressure: 140/90 mmHg
+- Heart Rate: 78 bpm
+- Temperature: 98.4°F
+- Respiratory Rate: 16 breaths/min
+
+Physical Examination:
+- General appearance: Alert and oriented
+- Cardiovascular: Normal S1/S2, no murmurs
+- Respiratory: Clear breath sounds bilaterally
+- Neurological: No focal deficits detected
+
+LABORATORY INVESTIGATIONS
+--------------------------
+Complete Blood Count:
+- Hemoglobin: 12.1 g/dL
+- WBC Count: 6,800 cells/mm³
+- Platelet Count: 2,80,000 cells/mm³
+
+Blood Chemistry:
+- Fasting Blood Sugar: 92 mg/dL
+- Serum Creatinine: 0.8 mg/dL
+- Total Cholesterol: 210 mg/dL
+- HDL: 45 mg/dL
+- LDL: 135 mg/dL
+
+DIAGNOSIS
+---------
+1. Essential Hypertension (Stage 1)
+2. Tension-type Headache
+3. Dyslipidemia
+
+TREATMENT PLAN
+--------------
+Medications:
+1. Amlodipine 5mg - Once daily
+2. Paracetamol 500mg - SOS for headache
+3. Atorvastatin 20mg - Once daily
+
+Lifestyle Modifications:
+- Regular exercise (30 minutes daily)
+- Low-salt diet
+- Stress management techniques
+- Adequate sleep (7-8 hours)
+
+FOLLOW-UP
+---------
+Next Review: February 15, 2024
+Tests to be done: Lipid profile, BP monitoring
+
+DOCTOR'S SIGNATURE
+------------------
+Dr. Poojitha
+MD (General Medicine)
+Registration No: A-12345
+
+---
+This report is generated electronically and is valid without signature.
+For any queries, contact: +91-9876543210       

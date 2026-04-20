@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Medical Record - Secure Medical Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        .encryption-steps {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-number {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        .file-info {
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        .progress {
+            height: 6px;
+            border-radius: 3px;
+        }
+        .security-badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h3><i class="fas fa-file-medical"></i> Upload Medical Record</h3>
+                    <p class="text-muted">Your files will be encrypted using AES-256 and protected with RSA-2048</p>
+                </div>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="patient_id" class="form-label">Select Patient</label>
+                        <select class="form-control" id="patient_id" name="patient_id" required>
+                            <option value="">Choose a patient...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.full_name }} ({{ patient.username }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Medical File</label>
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                            <h5>Drag & Drop your file here</h5>
+                            <p class="text-muted">or click to browse</p>
+                            <input type="file" id="medical_file" name="medical_file" class="d-none" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.dicom">
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('medical_file').click()">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <div class="mt-2">
+                                <small class="text-muted">Supported formats: PDF, DOC, DOCX, TXT, JPG, PNG, DICOM</small><br>
+                                <small class="text-muted">Maximum file size: 16MB</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file"></i>
+                                <span id="fileName"></span>
+                                <span class="security-badge ms-2"><i class="fas fa-lock"></i> Will be encrypted</span>
+                            </div>
+                            <div>
+                                <span id="fileSize" class="text-muted"></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="encryption-steps">
+                        <h6><i class="fas fa-shield-alt"></i> Encryption Process:</h6>
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div>Generate AES-256 encryption key</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div>Encrypt medical file with AES</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div>Encrypt AES key with patient's RSA public key</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div>Generate SHA-256 hash for integrity</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div>Create digital signature with your private key</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div>Store encrypted data in secure database</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn" disabled>
+                            <i class="fas fa-upload"></i> Upload Secure Record
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="progress mt-3 d-none" id="uploadProgress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Notice -->
+        <div class="alert alert-info mt-3">
+            <h6><i class="fas fa-info-circle"></i> Security Notice:</h6>
+            <ul class="mb-0">
+                <li>Files are encrypted before storage using AES-256 (military-grade encryption)</li>
+                <li>Only the intended patient can decrypt files using their private RSA key</li>
+                <li>Digital signatures ensure file authenticity and prevent tampering</li>
+                <li>All access is logged for audit purposes</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('medical_file');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Check file size (16MB limit)
+                if (file.size > 16 * 1024 * 1024) {
+                    alert('File size exceeds 16MB limit');
+                    clearFile();
+                    return;
+                }
+                
+                // Check file type
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'image/jpeg', 'image/png'];
+                if (!allowedTypes.includes(file.type) && !file.name.endsWith('.dicom')) {
+                    alert('File type not supported');
+                    clearFile();
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
+            }
+        }
+        
+        function clearFile() {
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            uploadBtn.disabled = true;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(uploadForm);
+            uploadBtn.disabled = true;
+            uploadProgress.classList.remove('d-none');
+            
+            try {
+                const response = await fetch('/records/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Medical record uploaded successfully!');
+                    window.location.href = '/records/doctor/dashboard';
+                } else {
+                    alert('Upload failed: ' + result.message);
+                }
+            } catch (error) {
+                alert('Upload failed: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadProgress.classList.add('d-none');
+            }
+        });
+    </script>
+</body>
+</html>
